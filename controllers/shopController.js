@@ -14,16 +14,33 @@ exports.createShop = async (req, res) => {
   }
 }
 
-// อ่านร้านค้าทั้งหมด หรือค้นหาด้วยชื่อ (query param ?name=)
+// อ่านร้านค้าทั้งหมด หรือค้นหาได้ทั้ง ชื่อ (name), ที่อยู่ (address), หรือ ทั้งสองอย่างพร้อมกัน
 exports.getShops = async (req, res) => {
   try {
-    const { name } = req.query
-    let shops
-    if (name) {
-      shops = await Shop.findAll({ where: { name } })
-    } else {
-      shops = await Shop.findAll({ order: [['id', 'ASC']] })  // เรียง id ด้วย
+    const { name, address } = req.query
+
+    let whereClause = {}
+
+    if (name && address) {
+      whereClause = {
+        name: { [Op.iLike]: `%${name}%` },
+        address: { [Op.iLike]: `%${address}%` }
+      }
+    } else if (name) {
+      whereClause = {
+        name: { [Op.iLike]: `%${name}%` }
+      }
+    } else if (address) {
+      whereClause = {
+        address: { [Op.iLike]: `%${address}%` }
+      }
     }
+
+    const shops = await Shop.findAll({
+      where: whereClause,
+      order: [['id', 'ASC']]
+    })
+
     res.json(shops)
   } catch (error) {
     res.status(500).json({ message: error.message })
