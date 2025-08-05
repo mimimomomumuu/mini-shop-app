@@ -1,4 +1,6 @@
 const { Shop } = require('../models')
+const { Op } = require('sequelize')
+
 
 // สร้างร้านค้าใหม่
 exports.createShop = async (req, res) => {
