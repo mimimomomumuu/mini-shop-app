@@ -7,7 +7,7 @@ const authRoutes = require('./routes/authRoutes')
 
 app.use(express.json())
 
-app.use('/auth', authRoutes)   
+app.use('/', authRoutes)   
 app.use(shopRoutes)
 
 app.get('/', (req, res) => {
